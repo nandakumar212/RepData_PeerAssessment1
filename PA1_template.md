@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Introduction
@@ -24,8 +19,8 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 
 The following code loads the data into a data frame and ensures that the variables are in the right format.
 
-```{r}
 
+```r
 # Load required packages
 library(gridExtra)
 library(knitr)
@@ -36,7 +31,6 @@ unzip("activity.zip")
 # Read the data
 df <- read.csv("activity.csv")
 df$date = as.Date(df$date)
-
 ```
 
 
@@ -44,8 +38,8 @@ df$date = as.Date(df$date)
 
 The following code produces a histogram of total number of steps per day and find this distribution's mean and median.
 
-```{r}
 
+```r
 # Sum up no. of steps for each day
 df_daysum <- aggregate(steps ~ date,df,sum, na.rm = TRUE)
 
@@ -55,10 +49,25 @@ ggplot(df_daysum, aes(x = steps)) +
         labs( title = "Histogram of total number of steps per day",
               x = "No. of steps",
               y = "Frequency" )
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+```r
 # Find the mean and median
 mean(df_daysum$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(df_daysum$steps)
+```
+
+```
+## [1] 10765
 ```
 
 The mean is 10766.19 and median is 10765
@@ -68,8 +77,8 @@ The mean is 10766.19 and median is 10765
 
 The following code makes a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis). It also finds the interval with maximum number of steps on average.
 
-```{r}
 
+```r
 # Find average number of steps for each interval
 df_avgint <- aggregate(steps ~ interval, df, mean, na.rm = TRUE)
 
@@ -79,10 +88,18 @@ ggplot ( df_avgint, aes(x = interval, y = steps) ) +
          labs( title = "Average daily activity",
                x = "Interval",
                y = "Average number of steps" )
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
 # Find the interval with max steps
 df_avgint[which.max(df_avgint$steps),]
+```
 
+```
+##     interval    steps
+## 104      835 206.1698
 ```
 
 Thus, the interval with maximum steps on average is 835
@@ -91,11 +108,17 @@ Thus, the interval with maximum steps on average is 835
 
 The following code finds the number of missing values (steps) in the dataset. Then it imputes those missing steps with the mean of the number of steps for that particular interval. It creates a new data set with those imputed values. Changes in the histogram, mean and median caused by this imputation is observed.
 
-```{r}
 
+```r
 # Total number of missing values(NA)
 sum(is.na(df$steps))
+```
 
+```
+## [1] 2304
+```
+
+```r
 # Split the data based on the presence of NAs
 df_notNA <- df[!is.na(df$steps), ]
 df_NA <- df[is.na(df$steps), ]               
@@ -128,17 +151,44 @@ p2 <- ggplot(df_daysum, aes(x = steps)) +
               y = "Frequency" ) + ylim(0,17)
 
 grid.arrange(p1, p2, ncol = 2, top = "Histogram of total number of steps per day")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+```r
 # Mean after imputation
 mean(imputed_daysum$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 # Mean before imputation
 mean(df_daysum$steps)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 # Median after imputation
 median(imputed_daysum$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 # Median before imputation
 median(df_daysum$steps)
+```
 
+```
+## [1] 10765
 ```
 
 As seen, the peak of the distribution has increased after imputation. While the mean remains the same, the median has marginally increased. Both  the mean and median of the imputed data are 10766.19
@@ -147,8 +197,8 @@ As seen, the peak of the distribution has increased after imputation. While the 
 
 The following code creates a new factor variable indicating whether a date is weekday or weekend. It then created a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 
-```{r}
 
+```r
 # Find the corresponding day of each date 
 imputed$day_type <- weekdays(imputed$date)
 
@@ -169,7 +219,8 @@ ggplot (imputed_avgint, aes(x = interval, y = steps)) +
         labs( title = "Average daily activity",
               x = "No. of steps",
               y = "Interval" )
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
 Thus, there is a significant increase in the activity levels during the weekend as compared to the weekdays.
